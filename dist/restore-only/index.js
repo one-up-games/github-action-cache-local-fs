@@ -5820,13 +5820,18 @@ function restoreCache(paths, primaryKey, restoreKeys, cacheBasePath) {
         let archivePath = "";
         try {
             let matchedKey = "";
-            for (const key of keys) {
-                const cacheFilePath = path.join(utils.getCacheStorePath(cacheBasePath, key), utils.getCacheFileName(compressionMethod));
-                const stats = yield stat(cacheFilePath);
-                if (stats.isFile()) {
-                    matchedKey = key;
-                    archivePath = cacheFilePath;
-                    break;
+            for (const key of keys) {                
+                try {                    
+                    const cacheFilePath = path.join(utils.getCacheStorePath(cacheBasePath, key), utils.getCacheFileName(compressionMethod));
+                    const stats = yield stat(cacheFilePath);
+                    if (stats.isFile()) {
+                        matchedKey = key;
+                        archivePath = cacheFilePath;
+                        break;
+                    }
+                }
+                catch (error) {
+                    core.info(`Cache for key: ${key} not found. Error: ${error}`);
                 }
             }
             if (matchedKey === "") {
